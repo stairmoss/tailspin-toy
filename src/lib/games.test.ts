@@ -6,7 +6,9 @@ import {
     getAllGames,
     getAllGameIds,
     getGameById,
+    sortGames,
 } from './games';
+import type { Game } from '../types/game';
 
 async function seedGames(db: Database, count: number): Promise<void> {
     const [category] = await db
@@ -35,6 +37,27 @@ describe('games data-access helpers', () => {
 
     beforeEach(async () => {
         db = await createTestDatabase();
+    });
+
+    describe('sortGames', () => {
+        const gamesToSort: Game[] = [
+            { id: 1, title: 'Beta', description: '', starRating: 3.5, category: null, publisher: null },
+            { id: 2, title: 'Alpha', description: '', starRating: 4.8, category: null, publisher: null },
+            { id: 3, title: 'Gamma', description: '', starRating: null, category: null, publisher: null },
+        ];
+
+        it.each([
+            ['title-asc', ['Alpha', 'Beta', 'Gamma']],
+            ['title-desc', ['Gamma', 'Beta', 'Alpha']],
+            ['rating-desc', ['Alpha', 'Beta', 'Gamma']],
+        ] as const)('sorts games by %s', (sort, expectedTitles) => {
+            expect(sortGames(gamesToSort, sort).map((game) => game.title)).toEqual(expectedTitles);
+        });
+
+        it('does not mutate the original collection', () => {
+            expect(sortGames(gamesToSort, 'title-desc')).not.toBe(gamesToSort);
+            expect(gamesToSort.map((game) => game.title)).toEqual(['Beta', 'Alpha', 'Gamma']);
+        });
     });
 
     it('returns all games ordered by title', async () => {
