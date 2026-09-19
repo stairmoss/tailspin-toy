@@ -16,6 +16,10 @@ The game catalog can be sorted from the home page by title (ascending or
 descending) or by star rating. Unrated games appear after rated games when
 sorting by rating.
 
+The site includes a light/dark theme toggle in the shared header. The selected
+theme is saved in the browser and restored on subsequent visits; dark mode
+remains the default.
+
 ## Using this template
 
 This repository is a GitHub template. When you create a new repository from it, a one-time **Bootstrap template issues** workflow (`.github/workflows/bootstrap-issues.yml`) runs automatically on the first push to `main` and opens a set of starter issues describing suggested first features. Each issue is defined by a Markdown file in `.github/bootstrap-issues/` — the first heading becomes the issue title and the remaining content becomes the body — so you can edit, add, or remove files there to control which issues are created.

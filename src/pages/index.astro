@@ -20,12 +20,12 @@ const games = await getAllGames(getDatabase());
 
     <div>
       <div class="flex flex-col gap-4 mb-6 sm:flex-row sm:items-center sm:justify-between">
-        <h2 class="text-2xl font-medium text-slate-100">Featured Games</h2>
+        <h2 class="text-2xl font-medium text-slate-900 dark:text-slate-100">Featured Games</h2>
         <div class="flex items-center gap-3">
-          <label for="game-sort" class="text-sm font-medium text-slate-300">Sort games</label>
+          <label for="game-sort" class="text-sm font-medium text-slate-600 dark:text-slate-300">Sort games</label>
           <select
             id="game-sort"
-            class="rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            class="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
             data-testid="game-sort"
           >
             <option value="title-asc">Title (A–Z)</option>
