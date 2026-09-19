@@ -24,6 +24,32 @@ test.describe('Game Listing and Navigation', () => {
     });
   });
 
+  test('should sort games by rating and title', async ({ page }) => {
+    await page.goto('/');
+    const sortControl = page.getByTestId('game-sort');
+    const gameCards = page.getByTestId('game-card');
+
+    await test.step('Verify the sort control is accessible', async () => {
+      await expect(sortControl).toHaveAccessibleName('Sort games');
+    });
+
+    await test.step('Sort by highest rating first', async () => {
+      await sortControl.selectOption('rating-desc');
+      const ratings = await gameCards.evaluateAll((cards) =>
+        cards.map((card) => Number(card.getAttribute('data-game-rating'))).filter(Number.isFinite),
+      );
+      expect(ratings).toEqual([...ratings].sort((a, b) => b - a));
+    });
+
+    await test.step('Sort by title descending', async () => {
+      await sortControl.selectOption('title-desc');
+      const titles = await gameCards.evaluateAll((cards) =>
+        cards.map((card) => card.getAttribute('data-game-title') ?? ''),
+      );
+      expect(titles).toEqual([...titles].sort((a, b) => b.localeCompare(a)));
+    });
+  });
+
   test('should navigate to correct game details page when clicking on a game', async ({ page }) => {
     let gameId: string | null;
     let gameTitle: string | null;

@@ -3,6 +3,8 @@ import type { Database } from './db';
 import { games, categories, publishers } from '../../db/schema';
 import type { Game } from '../types/game';
 
+export type GameSort = 'title-asc' | 'title-desc' | 'rating-desc';
+
 const gameSelection = {
     id: games.id,
     title: games.title,
@@ -40,6 +42,22 @@ function mapGame(row: GameSelectionRow): Game {
                 ? { id: row.publisherId, name: row.publisherName }
                 : null,
     };
+}
+
+/** Sort a game collection for the catalog controls. Unrated games appear last. */
+export function sortGames(gamesToSort: Game[], sort: GameSort): Game[] {
+    return [...gamesToSort].sort((a, b) => {
+        if (sort === 'rating-desc') {
+            if (a.starRating === null && b.starRating !== null) return 1;
+            if (a.starRating !== null && b.starRating === null) return -1;
+            if (a.starRating !== null && b.starRating !== null && a.starRating !== b.starRating) {
+                return b.starRating - a.starRating;
+            }
+        }
+
+        const titleComparison = a.title.localeCompare(b.title);
+        return sort === 'title-desc' ? -titleComparison : titleComparison;
+    });
 }
 
 function baseGamesQuery(db: Database) {

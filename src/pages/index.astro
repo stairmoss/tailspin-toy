@@ -19,7 +19,21 @@ const games = await getAllGames(getDatabase());
     />
 
     <div>
-      <h2 class="text-2xl font-medium mb-6 text-slate-100">Featured Games</h2>
+      <div class="flex flex-col gap-4 mb-6 sm:flex-row sm:items-center sm:justify-between">
+        <h2 class="text-2xl font-medium text-slate-100">Featured Games</h2>
+        <div class="flex items-center gap-3">
+          <label for="game-sort" class="text-sm font-medium text-slate-300">Sort games</label>
+          <select
+            id="game-sort"
+            class="rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            data-testid="game-sort"
+          >
+            <option value="title-asc">Title (A–Z)</option>
+            <option value="title-desc">Title (Z–A)</option>
+            <option value="rating-desc">Rating (highest first)</option>
+          </select>
+        </div>
+      </div>
 
       {games.length === 0 ? (
         <EmptyState text="No games available at the moment." />
@@ -31,3 +45,30 @@ const games = await getAllGames(getDatabase());
     </div>
   </div>
 </Layout>
+
+<script>
+  const sortControl = document.querySelector<HTMLSelectElement>('[data-testid="game-sort"]');
+  const gamesGrid = document.querySelector<HTMLElement>('[data-testid="games-grid"]');
+
+  sortControl?.addEventListener('change', () => {
+    if (!gamesGrid || !sortControl) return;
+
+    const cards = [...gamesGrid.querySelectorAll<HTMLElement>('[data-testid="game-card"]')];
+    const sort = sortControl.value;
+    cards.sort((a, b) => {
+      if (sort === 'rating-desc') {
+        const ratingA = Number(a.dataset.gameRating);
+        const ratingB = Number(b.dataset.gameRating);
+        const hasRatingA = Number.isFinite(ratingA);
+        const hasRatingB = Number.isFinite(ratingB);
+        if (hasRatingA !== hasRatingB) return hasRatingA ? -1 : 1;
+        if (hasRatingA && ratingA !== ratingB) return ratingB - ratingA;
+      }
+
+      const titleComparison = (a.dataset.gameTitle ?? '').localeCompare(b.dataset.gameTitle ?? '');
+      return sort === 'title-desc' ? -titleComparison : titleComparison;
+    });
+
+    cards.forEach((card) => gamesGrid.append(card));
+  });
+</script>
