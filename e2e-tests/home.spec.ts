@@ -24,4 +24,22 @@ test.describe('Home Page', () => {
     // Check that the welcome message is present using more specific locator
     await expect(page.getByText('Find your next game! And maybe even back one! Explore our collection!')).toBeVisible();
   });
+
+  test('should toggle and persist the selected theme', async ({ page }) => {
+    const themeToggle = page.getByTestId('theme-toggle');
+
+    await expect(page.locator('html')).toHaveClass(/dark/);
+    await expect(themeToggle).toHaveAttribute('aria-label', 'Switch to light theme');
+
+    await themeToggle.click();
+
+    await expect(page.locator('html')).not.toHaveClass(/dark/);
+    await expect(themeToggle).toHaveAttribute('aria-label', 'Switch to dark theme');
+    await expect(page.locator('body')).toHaveClass(/bg-slate-50/);
+
+    await page.reload();
+
+    await expect(page.locator('html')).not.toHaveClass(/dark/);
+    await expect(themeToggle).toHaveAttribute('aria-pressed', 'false');
+  });
 });
