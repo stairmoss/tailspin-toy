@@ -68,11 +68,19 @@ describe('games data-access helpers', () => {
         expect(all[0].publisher).toEqual({ id: expect.any(Number), name: 'Pub One' });
     });
 
+    it('returns an empty array when there are no games', async () => {
+        expect(await getAllGames(db)).toEqual([]);
+    });
+
     it('returns all game ids ordered by title', async () => {
         await seedGames(db, 3);
         const ids = await getAllGameIds(db);
         const all = await getAllGames(db);
         expect(ids).toEqual(all.map((g) => g.id));
+    });
+
+    it('returns an empty array of ids when there are no games', async () => {
+        expect(await getAllGameIds(db)).toEqual([]);
     });
 
     it('fetches a single game by id', async () => {
