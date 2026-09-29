@@ -61,6 +61,10 @@ export function parseCsv(content: string): Record<string, string>[] {
         }
     }
 
+    if (inQuotes) {
+        throw new Error('Unterminated quoted field at end of CSV input');
+    }
+
     // Flush trailing field/record (file without trailing newline).
     if (field.length > 0 || record.length > 0) {
         record.push(field);
