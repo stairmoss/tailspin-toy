@@ -61,6 +61,27 @@ npm run db:seed       # seed from games.csv (idempotent)
 npm run db:setup      # migrate + seed (run automatically by predev/prebuild)
 ```
 
+### Seed CSV format
+
+`db/games.csv` must have these headers in the first row:
+
+```csv
+Title,Category,Publisher,Description
+"Example Game","Strategy","Example Studio","A game about building software."
+```
+
+Each row supplies a game title, category name, publisher name, and base
+description. Values are trimmed, and rows with a blank `Title` are ignored.
+The CSV parser supports quoted fields, commas inside quoted fields, escaped
+quotes written as `""`, and newlines inside quoted fields. Seeding creates
+categories and publishers from the values in the CSV, appends the standard
+crowdfunding blurb to each game description, and derives a deterministic
+star rating from the title.
+
+Run `npm run db:seed` to seed the database from `db/games.csv`; this command
+does not apply migrations. Run `npm run db:setup` to migrate and then seed.
+The `predev` and `prebuild` scripts run setup automatically.
+
 > [!NOTE]
 > Seeding is idempotent — it skips games that already exist (matched by title) rather than reconciling changed rows. CI always starts from a clean database, so it reflects `games.csv` exactly. Locally, if you edit or remove rows in `games.csv`, delete `tailspin.db` and re-run `npm run db:setup` to fully regenerate.
 
