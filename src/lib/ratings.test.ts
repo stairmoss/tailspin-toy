@@ -25,8 +25,14 @@ describe('formatStarRating', () => {
         expect(formatStarRating(5)).toBe('★★★★★');
     });
 
-    it('renders a half star when the fraction is at least 0.5', () => {
-        expect(formatStarRating(3.5)).toBe('★★★½☆');
+    it.each([
+        { description: 'just below the 0.5 threshold', rating: 3.49, expected: '★★★☆☆' },
+        { description: 'exactly at the 0.5 threshold', rating: 3.5, expected: '★★★½☆' },
+    ])('renders $description correctly', ({ rating, expected }) => {
+        expect(formatStarRating(rating)).toBe(expected);
+    });
+
+    it('renders a half star for fractions above 0.5', () => {
         expect(formatStarRating(4.75)).toBe('★★★★½');
     });
 
