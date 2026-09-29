@@ -58,6 +58,16 @@ describe('games data-access helpers', () => {
             expect(sortGames(gamesToSort, 'title-desc')).not.toBe(gamesToSort);
             expect(gamesToSort.map((game) => game.title)).toEqual(['Beta', 'Alpha', 'Gamma']);
         });
+
+        it('accepts a readonly frozen collection and returns a sorted copy', () => {
+            const readonlyGames: readonly Game[] = Object.freeze([...gamesToSort]);
+
+            const sortedGames = sortGames(readonlyGames, 'title-desc');
+
+            expect(sortedGames).not.toBe(readonlyGames);
+            expect(sortedGames.map((game) => game.title)).toEqual(['Gamma', 'Beta', 'Alpha']);
+            expect(readonlyGames.map((game) => game.title)).toEqual(['Beta', 'Alpha', 'Gamma']);
+        });
     });
 
     it('returns all games ordered by title', async () => {

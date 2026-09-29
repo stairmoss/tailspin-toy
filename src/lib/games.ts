@@ -45,7 +45,7 @@ function mapGame(row: GameSelectionRow): Game {
 }
 
 /** Sort a game collection for the catalog controls. Unrated games appear last. */
-export function sortGames(gamesToSort: Game[], sort: GameSort): Game[] {
+export function sortGames(gamesToSort: readonly Game[], sort: GameSort): Game[] {
     return [...gamesToSort].sort((a, b) => {
         if (sort === 'rating-desc') {
             if (a.starRating === null && b.starRating !== null) return 1;
