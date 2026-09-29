@@ -10,7 +10,10 @@ import {
 } from './games';
 import type { Game } from '../types/game';
 
-async function seedGames(db: Database, count: number): Promise<void> {
+async function seedGames(
+    db: Database,
+    count: number,
+): Promise<{ categoryId: number; publisherId: number }> {
     const [category] = await db
         .insert(categories)
         .values({ name: 'Strategy', description: 'cat' })
@@ -30,6 +33,8 @@ async function seedGames(db: Database, count: number): Promise<void> {
             publisherId: publisher.id,
         });
     }
+
+    return { categoryId: category.id, publisherId: publisher.id };
 }
 
 describe('games data-access helpers', () => {
@@ -104,10 +109,14 @@ describe('games data-access helpers', () => {
     });
 
     it('fetches a single game by id', async () => {
-        await seedGames(db, 2);
+        const { categoryId, publisherId } = await seedGames(db, 2);
         const ids = await getAllGameIds(db);
         const game = await getGameById(db, ids[0]);
-        expect(game?.title).toBe('Game 01');
+        expect(game).toMatchObject({
+            title: 'Game 01',
+            category: { id: categoryId, name: 'Strategy' },
+            publisher: { id: publisherId, name: 'Pub One' },
+        });
     });
 
     it('returns null for a non-existent game', async () => {
