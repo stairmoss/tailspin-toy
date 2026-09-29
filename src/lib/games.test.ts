@@ -54,6 +54,20 @@ describe('games data-access helpers', () => {
             expect(sortGames(gamesToSort, sort).map((game) => game.title)).toEqual(expectedTitles);
         });
 
+        it('sorts equal-rated games alphabetically for rating-desc', () => {
+            const equalRatedGames: Game[] = [
+                { id: 1, title: 'Gamma', description: '', starRating: 4.2, category: null, publisher: null },
+                { id: 2, title: 'Alpha', description: '', starRating: 4.2, category: null, publisher: null },
+                { id: 3, title: 'Beta', description: '', starRating: 4.2, category: null, publisher: null },
+            ];
+
+            expect(sortGames(equalRatedGames, 'rating-desc').map((game) => game.title)).toEqual([
+                'Alpha',
+                'Beta',
+                'Gamma',
+            ]);
+        });
+
         it('does not mutate the original collection', () => {
             expect(sortGames(gamesToSort, 'title-desc')).not.toBe(gamesToSort);
             expect(gamesToSort.map((game) => game.title)).toEqual(['Beta', 'Alpha', 'Gamma']);
