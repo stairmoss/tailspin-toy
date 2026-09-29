@@ -54,6 +54,24 @@ describe('games data-access helpers', () => {
             expect(sortGames(gamesToSort, sort).map((game) => game.title)).toEqual(expectedTitles);
         });
 
+        it('puts unrated games last and sorts them alphabetically for rating-desc', () => {
+            const gamesWithUnratedPeers: Game[] = [
+                { id: 1, title: 'Zeta', description: '', starRating: null, category: null, publisher: null },
+                { id: 2, title: 'Rated Low', description: '', starRating: 3.5, category: null, publisher: null },
+                { id: 3, title: 'Alpha', description: '', starRating: null, category: null, publisher: null },
+                { id: 4, title: 'Rated High', description: '', starRating: 4.8, category: null, publisher: null },
+                { id: 5, title: 'Middle', description: '', starRating: null, category: null, publisher: null },
+            ];
+
+            expect(sortGames(gamesWithUnratedPeers, 'rating-desc').map((game) => game.title)).toEqual([
+                'Rated High',
+                'Rated Low',
+                'Alpha',
+                'Middle',
+                'Zeta',
+            ]);
+        });
+
         it('does not mutate the original collection', () => {
             expect(sortGames(gamesToSort, 'title-desc')).not.toBe(gamesToSort);
             expect(gamesToSort.map((game) => game.title)).toEqual(['Beta', 'Alpha', 'Gamma']);
