@@ -67,6 +67,25 @@ describe('parseGamesCsv', () => {
         const rows = parseGamesCsv('Title,Category,Publisher,Description\n,,,');
         expect(rows).toHaveLength(0);
     });
+
+    it.each(['Title', 'Category', 'Publisher', 'Description'])(
+        'reports the missing %s header',
+        (missingHeader) => {
+            const headers = ['Title', 'Category', 'Publisher', 'Description'].filter(
+                (header) => header !== missingHeader,
+            );
+
+            expect(() => parseGamesCsv(headers.join(','))).toThrow(
+                `missing required header: ${missingHeader}`,
+            );
+        },
+    );
+
+    it('reports all required headers when the CSV is empty', () => {
+        expect(() => parseGamesCsv('')).toThrow(
+            'missing required headers: Title, Category, Publisher, Description',
+        );
+    });
 });
 
 describe('description helpers', () => {

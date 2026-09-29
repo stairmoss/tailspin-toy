@@ -11,13 +11,25 @@ export interface GameCsvRow {
     description: string;
 }
 
+const REQUIRED_GAME_CSV_HEADERS: readonly string[] = [
+    'Title',
+    'Category',
+    'Publisher',
+    'Description',
+];
+
 const CROWDFUNDING_BLURB = ' Support this game through our crowdfunding platform!';
+
+interface ParsedCsv {
+    header: string[];
+    rows: Record<string, string>[];
+}
 
 /**
  * Minimal RFC-4180-style CSV parser supporting quoted fields, escaped quotes
  * (""), and newlines inside quoted values. Returns rows keyed by header name.
  */
-export function parseCsv(content: string): Record<string, string>[] {
+function parseCsvWithHeader(content: string): ParsedCsv {
     const records: string[][] = [];
     let field = '';
     let record: string[] = [];
@@ -75,22 +87,41 @@ export function parseCsv(content: string): Record<string, string>[] {
     }
 
     if (records.length === 0) {
-        return [];
+        return { header: [], rows: [] };
     }
 
     const [header, ...rows] = records;
-    return rows.map((row) => {
-        const entry: Record<string, string> = {};
-        header.forEach((key, index) => {
-            entry[key] = row[index] ?? '';
-        });
-        return entry;
-    });
+    return {
+        header,
+        rows: rows.map((row) => {
+            const entry: Record<string, string> = {};
+            header.forEach((key, index) => {
+                entry[key] = row[index] ?? '';
+            });
+            return entry;
+        }),
+    };
+}
+
+export function parseCsv(content: string): Record<string, string>[] {
+    return parseCsvWithHeader(content).rows;
 }
 
 /** Parse the games seed CSV into typed rows. */
 export function parseGamesCsv(content: string): GameCsvRow[] {
-    return parseCsv(content)
+    const { header, rows } = parseCsvWithHeader(content);
+    const missingHeaders = REQUIRED_GAME_CSV_HEADERS.filter((requiredHeader) =>
+        !header.includes(requiredHeader),
+    );
+    if (missingHeaders.length > 0) {
+        const noun = missingHeaders.length === 1 ? 'header' : 'headers';
+        throw new Error(
+            `Invalid games CSV: missing required ${noun}: ${missingHeaders.join(', ')}. ` +
+                `Required headers are: ${REQUIRED_GAME_CSV_HEADERS.join(', ')}.`,
+        );
+    }
+
+    return rows
         .filter((row) => (row.Title ?? '').trim().length > 0)
         .map((row) => ({
             title: row.Title.trim(),
