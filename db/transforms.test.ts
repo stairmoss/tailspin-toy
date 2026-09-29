@@ -28,6 +28,12 @@ describe('parseCsv', () => {
         expect(rows[0].B).toBe('y');
     });
 
+    it('rejects an unterminated quoted field with a clear error', () => {
+        expect(() => parseCsv('A\n"unterminated')).toThrow(
+            'Unterminated quoted field at end of CSV input',
+        );
+    });
+
     it('returns an empty array for empty input', () => {
         expect(parseCsv('')).toEqual([]);
     });
