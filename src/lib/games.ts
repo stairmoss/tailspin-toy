@@ -16,16 +16,15 @@ const gameSelection = {
     publisherName: publishers.name,
 };
 
-type GameSelectionRow = {
-    id: number;
-    title: string;
-    description: string;
-    starRating: number | null;
-    categoryId: number | null;
-    categoryName: string | null;
-    publisherId: number | null;
-    publisherName: string | null;
-};
+function baseGamesQuery(db: Database) {
+    return db
+        .select(gameSelection)
+        .from(games)
+        .leftJoin(categories, eq(games.categoryId, categories.id))
+        .leftJoin(publishers, eq(games.publisherId, publishers.id));
+}
+
+type GameSelectionRow = Awaited<ReturnType<typeof baseGamesQuery>>[number];
 
 function mapGame(row: GameSelectionRow): Game {
     return {
@@ -58,14 +57,6 @@ export function sortGames(gamesToSort: Game[], sort: GameSort): Game[] {
         const titleComparison = a.title.localeCompare(b.title);
         return sort === 'title-desc' ? -titleComparison : titleComparison;
     });
-}
-
-function baseGamesQuery(db: Database) {
-    return db
-        .select(gameSelection)
-        .from(games)
-        .leftJoin(categories, eq(games.categoryId, categories.id))
-        .leftJoin(publishers, eq(games.publisherId, publishers.id));
 }
 
 /** All games ordered by title. */
