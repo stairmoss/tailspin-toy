@@ -17,6 +17,11 @@ describe('parseCsv', () => {
         expect(rows).toEqual([{ A: 'hello, world', B: 'x' }]);
     });
 
+    it('ignores a leading UTF-8 BOM before the first header', () => {
+        const rows = parseCsv('\uFEFFA,B\nx,y');
+        expect(rows).toEqual([{ A: 'x', B: 'y' }]);
+    });
+
     it('handles escaped double quotes', () => {
         const rows = parseCsv('A\n"she said ""hi"""');
         expect(rows[0].A).toBe('she said "hi"');

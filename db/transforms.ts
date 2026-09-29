@@ -23,7 +23,8 @@ export function parseCsv(content: string): Record<string, string>[] {
     let record: string[] = [];
     let inQuotes = false;
 
-    for (let i = 0; i < content.length; i++) {
+    const firstCharacter = content.charCodeAt(0) === 0xFEFF ? 1 : 0;
+    for (let i = firstCharacter; i < content.length; i++) {
         const char = content[i];
 
         if (inQuotes) {
