@@ -95,6 +95,16 @@ describe('dedupe helpers', () => {
 });
 
 describe('ratingFromTitle', () => {
+    it.each([
+        { title: '', expected: 3.0 },
+        { title: 'A', expected: 3.2 },
+        { title: 'DevOps Dominion', expected: 3.6 },
+        { title: 'Pipeline Conquest', expected: 3.9 },
+        { title: 'Server Siege', expected: 3.3 },
+    ])('returns the known rating for "$title"', ({ title, expected }) => {
+        expect(ratingFromTitle(title)).toBe(expected);
+    });
+
     it('is deterministic for the same title', () => {
         expect(ratingFromTitle('DevOps Dominion')).toBe(ratingFromTitle('DevOps Dominion'));
     });
